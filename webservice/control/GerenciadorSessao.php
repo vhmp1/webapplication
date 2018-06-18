@@ -8,4 +8,7 @@ class GerenciadorSessao {
     public function efetuarLogin($usuario,$senha){
         return SessaoDAO::efetuarLogin($usuario,$senha);
     }
+    public function efetuarCadastro($usuario,$senha){
+        return SessaoDAO::efetuarCadastro($usuario,$senha);
+    }
 }

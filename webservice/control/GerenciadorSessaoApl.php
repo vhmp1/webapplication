@@ -12,11 +12,21 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 	$json = file_get_contents('php://input');
     $jsonObject = json_decode($json);
     $response = new Response();
-    if( strcasecmp($jsonObject->method, "efetuarLogin") == 0 ) {
+    if( strcasecmp($jsonObject->method, "login") == 0 ) {
     	$login = $jsonObject->login;
-        $senha = $jsonObject->senha;
+        $senha = $jsonObject->pass;
 
         $response->status = GerenciadorSessao::efetuarLogin($login, $senha);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
+    } elseif ( strcasecmp($jsonObject->method, "singup") == 0 ) {
+        $login = $jsonObject->login;
+        $senha = $jsonObject->pass;
+
+        $response->status = GerenciadorSessao::efetuarCadstro($login, $senha);
         
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: *");

@@ -49,7 +49,7 @@
 		      		<input type="text" placeholder="Usuário" name="username" id="username" required>
 
 		      		<label for="pass"><b>Senha</b></label>
-		      		<input type="password" placeholder="Senha" name="pass" id="pass" required>
+		      		<input type="password" placeholder="****" name="pass" id="pass" required>
 
 		      		<button type="submit">Login</button>
 		      		<label>
@@ -65,31 +65,36 @@
 		</div>
 
 		<!-- sign up modal -->
-		<div id="singupForm" class="loginModal" style="display: none;">
-	  		<span onclick="document.getElementById('loginForm').style.display='none'" class="close" title="Close Modal">&times;</span>
+		<div id="singupForm" class="loginModal" style="display: block;">
+	  		<span onclick="document.getElementById('singupForm').style.display='none'" class="close" title="Close Modal">&times;</span>
 
 		 	<!-- Modal Content -->
-		 	<form class="modal-content animate" action="javascript:login()">
+		 	<form class="modal-content animate" action="javascript:singup()">
 		    	<div class="imgcontainer">
 		     		<!-- <img src="img_avatar2.png" alt="Avatar" class="avatar"> -->
 		    	</div>
 
 		    	<div class="container">
-		    		<label for="username"><b>Usuário</b></label>
+		    		<label for="name"><b>Nome completo</b></label>
+		      		<input type="text" placeholder="Nome" name="name" id="name" required>
+
+		    		<label for="username"><b>Nome de usuário</b></label>
 		      		<input type="text" placeholder="Usuário" name="username" id="username" required>
 
+		      		<label for="email"><b>Email</b></label>
+		      		<input type="text" placeholder="example@email.com" name="email" id="email" required>
+
+		      		<label for="email-check"><b>Confirmar email</b></label>
+		      		<input type="text" placeholder="example@email.com" name="email-check" id="email-check" required>
+
 		      		<label for="pass"><b>Senha</b></label>
-		      		<input type="password" placeholder="Senha" name="pass" id="pass" required>
+		      		<input type="password" placeholder="****" name="pass" id="pass" required>
 
-		      		<button type="submit">Login</button>
-		      		<label>
-		        		<input type="checkbox" name="remember"> Remember me 
-		      		</label>
-		    	</div>
+		      		<label for="pass-check"><b>Confirmar senha</b></label>
+		      		<input type="password" placeholder="****" name="pass-check" id="pass-check" required>
 
-		    	<div class="container" style="background-color:#f1f1f1">
-		      		<button type="button" onclick="document.getElementById('loginForm').style.display='none'" class="cancelbtn">Cancel</button>
-		      		<span class="pass"> <a href="#">Forgot password?</a></span>
+		      		<button type="submit">Cadastrar</button>
+		      		<button type="button" onclick="document.getElementById('loginForm').style.display='none'" class="cancelbtn">Cancelar</button>
 		    	</div>
 			</form>
 		</div>
@@ -112,12 +117,74 @@
 
 		<!-- javascript in file -->
 		<script type="text/javascript">
+			// password validation
+			var password = document.getElementById("pass");
+			var confirm_password = document.getElementById("pass-check");
+
+			function validatePassword(){
+          		if(password.value != confirm_password.value) {
+          			console.log(confirm_password.value);
+          			console.log(password.value)
+          			confirm_password.setCustomValidity("Senhas estão diferentes!");
+          		} else {
+          			confirm_password.setCustomValidity('');
+          		}
+          	}
+          	
+          	password.onchange = validatePassword;
+          	confirm_password.onkeyup = validatePassword;
+
+          	// email validation
+          	var email = document.getElementById("email");
+			var confirm_email = document.getElementById("email-check");
+
+			function validateEmail(){
+				console.log("aaaa")
+          		if(email.value != confirm_email.value) {
+          			console.log(confirm_email.value);
+          			console.log(email.value)
+          			confirm_email.setCustomValidity("Senhas estão diferentes!");
+          		} else {
+          			confirm_email.setCustomValidity('');
+          		}
+          	}
+          	
+          	email.onchange = validateEmail;
+          	confirm_email.onkeyup = validateEmail;
+
+          	// Functions to call php by xhttp
 			function login() {
 				var jsonObject = {};
 
-				//console.log(pathBase);
+				jsonObject["method"] = "login";
+				jsonObject["login"] = document.getElementById("username").value;
+				jsonObject["pass"] = document.getElementById("pass").value;
 
-				jsonObject["method"] = "efetuarLogin";
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				        sessionStorage.setItem("usuario", usuario);
+				        window.location.href="index.html";
+				      } else{
+				        alertify.error("Usuário ou senha inválidos!");
+				        document.getElementById("username").value="";
+				        document.getElementById("pass").value="";
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));
+			}
+
+			function singup() {
+				var jsonObject = {};
+
+				jsonObject["method"] = "singup";
 				jsonObject["login"] = document.getElementById("username").value;
 				jsonObject["senha"] = document.getElementById("pass").value;
 
@@ -136,7 +203,7 @@
 				  }
 				};
 
-				xhttp.open("POST", "webservice/control/GerenciadorSessaoApl.php", true);
+				xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
 				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
 				xhttp.send(JSON.stringify(jsonObject));
