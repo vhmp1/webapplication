@@ -23,10 +23,12 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode( $response );
     } elseif ( strcasecmp($jsonObject->method, "singup") == 0 ) {
+        $name = $jsonObject->name;
         $login = $jsonObject->login;
-        $senha = $jsonObject->pass;
+        $pass = $jsonObject->pass;
+        $email = $jsonObject->email;
 
-        $response->status = GerenciadorSessao::efetuarCadstro($login, $senha);
+        $response->status = GerenciadorSessao::efetuarCadastro($name, $login, $pass, $email);
         
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: *");
