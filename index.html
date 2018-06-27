@@ -32,8 +32,6 @@
 	</head>
 	<body onload="checkLogin()">
 
-		<button onclick="document.getElementById('loginForm').style.display='block'"> test </button>
-
 		<!-- login modal -->
 		<div id="loginForm" class="loginModal" style="display: none;">
 	  		<span onclick="document.getElementById('loginForm').style.display='none'" class="close" title="Close Modal">&times;</span>
@@ -54,6 +52,7 @@
 		      			<label for="pass">Senha: </label>
 			      		<input type="password" placeholder="****" name="pass" id="pass" class="form-control" required>
 			      	</div>
+
 			      	<div class="form-group">
 			      		<input type="checkbox" name="remember" class="form-check-input"> 
 			      		<label for="remember" class="form-check-label" >Mantenha conectado</label>
@@ -67,7 +66,7 @@
 		</div>
 
 		<!-- sign up modal -->
-		<div id="singupForm" class="loginModal" style="display: none;">
+		<div id="singupForm" class="loginModal" style="display: block;">
 	  		<span onclick="document.getElementById('singupForm').style.display='none'" class="close" title="Close Modal">&times;</span>
 
 		 	<!-- Modal Content -->
@@ -124,6 +123,29 @@
 		<script type="text/javascript">
 			// Validate login 
 			function checkLogin(){
+				var key = getParameterByName("chave");
+				if(key != "") {
+					var jsonObject = {};
+
+					jsonObject["method"] = "confirmUser";
+					jsonObject["key"] = key;
+
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+					  if (this.readyState == 4 && this.status == 200) {
+					      var resultado = JSON.parse(this.responseText);
+					      if(resultado.status == true){
+					        window.location.href="index.html";
+					      } 
+					  }
+					};
+
+					xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
+					xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+					xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+					xhttp.send(JSON.stringify(jsonObject));
+				}
+
 				if(getCookie("user") == "") {
 					document.getElementById("loginForm").style.display = 'block';
 				}
@@ -133,10 +155,7 @@
 			var confirm_password = document.getElementById("pass-check");
 
 			function validatePassword(){
-				console.log(password);
           		if(password.value != confirm_password.value) {
-          			console.log(confirm_password.value);
-          			console.log(password.value)
           			confirm_password.setCustomValidity("Senhas estão diferentes!");
           		} else {
           			confirm_password.setCustomValidity('');
@@ -145,15 +164,6 @@
           	
           	password.onchange = validatePassword;
           	confirm_password.onkeyup = validatePassword;
-
-          	// email validation
-          	var email = document.getElementById("email");
-
-			function validateEmail(){
-    
-          	}
-          	
-          	email.onchange = validateEmail;
 
           	// Functions to call php by xhttp
 			function login() {

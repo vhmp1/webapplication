@@ -11,4 +11,7 @@ class GerenciadorSessao {
     public function efetuarCadastro($name, $login, $pass, $email){
         return SessaoDAO::efetuarCadastro($name, $login, $pass, $email);
     }
+    public function confirmarCadastro($key){
+    	return SessaoDAO::confirmarCadastro($key);
+    }
 }

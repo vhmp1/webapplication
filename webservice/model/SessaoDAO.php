@@ -1,6 +1,18 @@
 <?php
+
+//ini_set('display_errors',1);
+//ini_set('display_startup_erros',1);
+//error_reporting(E_ALL);
+
 require_once("../bd/Database.php");
 require_once("../util/Response.php");
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require "../util/PHPMailer/src/PHPMailer.php";
+require "../util/PHPMailer/src/Exception.php";
+require "../util/PHPMailer/src/SMTP.php";
 
 class SessaoDAO{
 
@@ -30,10 +42,11 @@ SQL;
 
      static public function efetuarCadastro($name, $login, $pass, $email) {
         $pass = md5($pass);
+        $key = md5(date('Y-m-d H:i'));
 
         $query = <<<SQL
-                INSERT INTO User (name, username, password, email)
-                VALUES (:name, :username, :password, :email)
+                INSERT INTO User (UserType_idUserType, name, username, password, email, confirm)
+                VALUES (2, :name, :username, :password, :email, :key)
 SQL;
 
         $database = new Database();
@@ -43,15 +56,14 @@ SQL;
         $statement->bindValue(':password', $pass, PDO::PARAM_STR);
         $statement->bindValue(':name', $name, PDO::PARAM_STR);
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->bindValue(':key', $key, PDO::PARAM_STR);
         $statement->execute();
         $database = null;
 
         if($statement->rowCount() == 0)
             return false;
 
-        $key = md5(date('Y-m-d H:i'));
         $link = "localhost/webapplication/index.html?chave=" . $key;
-
         $corpo = "  <html lang=pt-br>
                         <head>
                             <meta charset=\"utf-8\">
@@ -69,15 +81,11 @@ SQL;
                             </div>
                             <br/>
                             <div align=\"center\">
-                                <p style=\"font-family: Comfortaa;\">Obrigado por se inscrever na XIV FLISoL!</p>
-                                <p style=\"font-family: Comfortaa;\">Ficaremos felizes por te receber em <b>28 de abril</b> no <i>campus</i> da Universidade Federal de Viçosa em Florestal!</p>
-                            </div>
-                            <div align=\"center\">
-                                <p style=\"font-family: Comfortaa;\">Para confirmar sua inscrição clique no link destacado abaixo.</p>
+                                <p style=\"font-family: Comfortaa;\">Obrigado por se inscrever na Beer!</p>
                             </div>
                             <br />
                             <div align=\"center\">
-                                <p style=\"font-family: Comfortaa;\">Clique <a href=$link>aqui</a> para confirmar sua inscrição e aproveite para conferir nossas atividades e salvá-las em sua agenda!</p>
+                                <p style=\"font-family: Comfortaa;\">Clique <a href=$link>aqui</a> para confirmar sua inscrição!</p>
                             </div>
                             <br />
                             <div align=\"center\">
@@ -85,18 +93,16 @@ SQL;
                             </div>
                         </body>
                     </html>" ;
-
-        require "../util/PHPMailer/src/PHPMailer.php";
        
-        $mail = new PHPMailer;
+        $mail = new PHPMailer(true);
         $mail->IsSMTP();
-        $mail->SMTPDebug = 1;
+        $mail->SMTPDebug = 0;
         $mail->SMTPAuth = true;
         $mail->SMTPSecure = 'ssl';
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 465;
         $mail->Username = 'noreply.beer@gmail.com';
-        $mail->Password = 'socialbeer';
+        $mail->Password = 'Beer@123';
         $mail->SetFrom('noreply.beer@gmail.com', 'Equipe Beer!', 0);
         $mail->Priority = 1;
         $mail->IsHTML(true);
@@ -107,7 +113,6 @@ SQL;
         $mail->AddEmbeddedImage('../_image/logo_flisol.png', 'logo_flisol');
    
         if(!$mail->Send()){
-            echo 'Mail error: '.$mail->ErrorInfo;
             return false;
         } else{
             return true;
@@ -115,4 +120,20 @@ SQL;
 
     }
 
+    static public function confirmarCadastro($key) {
+        $query = <<<SQL
+                UPDATE User
+                SET confirm = 1
+                WHERE confirm = :key
+SQL;
+
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':key', $key, PDO::PARAM_STR);
+        $statement->execute();
+        $database = null;
+
+        return $statement->rowCount() > 0;
+    }
 }
