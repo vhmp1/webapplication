@@ -30,7 +30,7 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 		<link rel="stylesheet" type="text/css" href="css/reset.css">
 	</head>
-	<body>
+	<body onload="checkLogin()">
 
 		<button onclick="document.getElementById('loginForm').style.display='block'"> test </button>
 
@@ -67,7 +67,7 @@
 		</div>
 
 		<!-- sign up modal -->
-		<div id="singupForm" class="loginModal" style="display: block;">
+		<div id="singupForm" class="loginModal" style="display: none;">
 	  		<span onclick="document.getElementById('singupForm').style.display='none'" class="close" title="Close Modal">&times;</span>
 
 		 	<!-- Modal Content -->
@@ -122,6 +122,12 @@
 
 		<!-- javascript in file -->
 		<script type="text/javascript">
+			// Validate login 
+			function checkLogin(){
+				if(getCookie("user") == "") {
+					document.getElementById("loginForm").style.display = 'block';
+				}
+			}
 			// password validation
 			var password = document.getElementById("pass-cad");
 			var confirm_password = document.getElementById("pass-check");
@@ -162,7 +168,7 @@
 				  if (this.readyState == 4 && this.status == 200) {
 				      var resultado = JSON.parse(this.responseText);
 				      if(resultado.status == true){
-				        sessionStorage.setItem("usuario", usuario);
+				      	setCookie("user", jsonObject["login"], 100)
 				        window.location.href="index.html";
 				      } else{
 				        alertify.error("Usuário ou senha inválidos!");

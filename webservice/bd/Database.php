@@ -18,9 +18,9 @@ class Database {
         }
         try{
             /// Notebook
-            //$this->pdo = new PDO("mysql:host=127.0.0.1;dbname=webapplication", "root", "Cadlya19");
+            $this->pdo = new PDO("mysql:host=127.0.0.1;dbname=webapplication", "root", "Cadlya19");
             /// Sala
-            $this->pdo = new PDO("mysql:host=127.0.0.1;dbname=webapplication", "root", "aluno");
+            //$this->pdo = new PDO("mysql:host=127.0.0.1;dbname=webapplication", "root", "aluno");
         } catch(PDOException $e){
             echo $e;
             exit(false);
