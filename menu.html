@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> 
+	<a class="navbar-brand" href="#"> <img src="img/favicon.svg" style="padding: 0; width: 25px"> Beer! </a> 
+	
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#"> Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+      </ul>
+
+      <div class="navbar-form navbar-left">
+      	<div class="input-group"> 
+      		<input id="searchInput" class="form-control" type="text" placeholder="Pesquisar" aria-label="Pesquisar">
+      		<div class="input-group-btn"> 
+      			<button class="btn btn-default" onclick="window.location.href='search.html?q=' + document.getElementById('searchInput').value;">
+      				<i class="material-icons" style="font-size: 12pt; padding: 0;"> search </i>
+      			</button>
+      		</div>
+
+          <span><i class="material-icons" onclick="clearCookie('user'); window.location.href='index.html'; "> exit_to_app </i></span>
+      	</div>
+      </div>
+    </div>
+</nav>

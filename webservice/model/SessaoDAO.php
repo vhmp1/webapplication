@@ -22,7 +22,7 @@ class SessaoDAO{
         $senha = md5($senha);
 
         $query = <<<SQL
-                SELECT *
+                SELECT idUser
                 FROM User
                 WHERE username = :username AND
                 password = :password AND
@@ -37,7 +37,8 @@ SQL;
         $statement->execute();
         $database = null;
 
-        return ($statement->rowCount() > 0);
+        $data = $statement->fetchObject();
+        return $data;
     }
 
      static public function efetuarCadastro($name, $login, $pass, $email) {
@@ -135,5 +136,104 @@ SQL;
         $database = null;
 
         return $statement->rowCount() > 0;
+    }
+
+    static public function getData($user) {
+        $query = <<<SQL
+                SELECT name, pic
+                FROM User
+                WHERE idUser = :user
+SQL;
+
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':user', $user, PDO::PARAM_INT);
+        $statement->execute();
+        $database = null;
+
+        $data = $statement->fetchObject();
+        return $data;
+    }
+
+    static public function updateData($user, $username, $pic) {
+        $query = <<<SQL
+                UPDATE User 
+                SET name = :name,
+                    pic = :pic
+                WHERE idUser = :user
+SQL;
+
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':user', $user, PDO::PARAM_INT);
+        $statement->bindValue(':name', $username, PDO::PARAM_STR);
+        $statement->bindValue(':pic', $pic, PDO::PARAM_STR);
+        $statement->execute();
+        $database = null;
+
+        return $statement->rowCount() > 0;
+    }
+
+    static public function search($pattern) {
+        $pattern = '%'.$pattern.'%';
+
+        // INSERT USERS ON ARRAY
+        $array = array();
+
+        $query = <<<SQL
+                SELECT idUser, username, name, pic
+                FROM User
+                WHERE UPPER(name) LIKE UPPER(:pattern)
+                OR UPPER(username) LIKE UPPER(:pattern) 
+SQL;
+        
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':pattern', $pattern, PDO::PARAM_STR);
+        $statement->execute();
+        $database = null;
+
+        $users = array();
+        while(($data = $statement->fetchObject()) !== false){
+            $atual = array();
+            $atual["idUser"] = $data->idUser;
+            $atual["name"] = $data->name;
+            $atual["username"] = $data->username;
+            $atual["pic"] = $data->pic;
+            $users[] = $atual;
+        }
+
+        if(!empty($users))
+            $array["users"] = $users;
+
+        // INSERT GROUPS ON ARRAY
+        $query = <<<SQL
+                SELECT idGroup, groupname
+                FROM Group
+                WHERE UPPER(groupname) LIKE UPPER(:pattern)
+SQL;
+    
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':pattern', $pattern, PDO::PARAM_STR);
+        $statement->execute();
+        $database = null;
+
+        $groups = array();
+        while(($data = $statement->fetchObject()) !== false){
+            $atual = array();
+            $atual["idGroup"] = $data->idGroup;
+            $atual["groupname"] = $data->groupname;
+            $groups[] = $atual;
+        }
+
+        if(!empty($groups))
+            $array["groups"] = $groups;
+
+        return $array;
     }
 }

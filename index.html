@@ -7,18 +7,27 @@
    		<meta name="description" content="">
     	<meta name="author" content="">
     	
-    	<link rel="icon" href="img/favicon.png">
+    	<link rel="icon" href="img/favicon.svg">
 		<title> Beer! </title>
 
-		<!-- Bootstrap core CSS -->
-	    <link href="css/bootstrap.min.css" rel="stylesheet">
+		<!-- reset CSS -->
+		<link rel="stylesheet" type="text/css" href="css/reset.css">
+
+		<!-- Bootstrap core CSS -->	
+	    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
 	    <!-- Alertify CSS -->
 	    <link rel="stylesheet" type="text/css" href="css/alertify.min.css">
 
+	    <!-- W3 CSS -->
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+
 	    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	    <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
+	    <!-- Fonts -->
+	    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+	    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 	    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
@@ -28,90 +37,82 @@
 		
 		<!-- css imports -->
 		<link rel="stylesheet" type="text/css" href="css/style.css">
-		<link rel="stylesheet" type="text/css" href="css/reset.css">
+
 	</head>
-	<body onload="checkLogin()">
+	<body onload="checkLogin(); getData();">
+		<!-- NAVBAR MENU -->
+		<div w3-include-html="menu.html"></div>
 
-		<!-- login modal -->
-		<div id="loginForm" class="loginModal" style="display: none;">
-	  		<span onclick="document.getElementById('loginForm').style.display='none'" class="close" title="Close Modal">&times;</span>
+		<!-- BODY -->
+		<div class="main-body">
+			<div class="row">
+				<div id="profile" class="col-md-2 card box-shadow">
+					<div class="card-header"> Perfil </div>
+					<div class="content"> 
+						<div id="avatar"><img id="pic_form" src="img/default-avatar.png"></div>
+						
+						<hr>
 
-		 	<!-- Modal Content -->
-		 	<form class="modal-content animate" action="javascript:login()">
-		    	<div class="imgcontainer">
-		     		<!-- <img src="img_avatar2.png" alt="Avatar" class="avatar"> -->
-		    	</div>
+						<div class="input-group mb-2">
+							<div class="input-group-prepend">
+								<div class="input-group-text">Nome:</div>
+							</div>
+							<input type="text" class="form-control input-group-text" id="name_form" disabled="true">
+							<div class="input-group-append"> 
+								<div class="input-group-text material-icons bt" onclick="enable_edit('name_form', this)"> mode_edit </div>
+							</div>
+						</div>
 
-		    	<div class="container">
-		    		<div class="form-group">
-		    			<label for="username">Usuário: </label>
-		      			<input type="text" placeholder="Usuário" name="username" id="username" class="form-control" required>
-		      		</div>
-
-		      		<div class="form-group">
-		      			<label for="pass">Senha: </label>
-			      		<input type="password" placeholder="****" name="pass" id="pass" class="form-control" required>
-			      	</div>
-
-			      	<div class="form-group">
-			      		<input type="checkbox" name="remember" class="form-check-input"> 
-			      		<label for="remember" class="form-check-label" >Mantenha conectado</label>
-			      	</div>
-
-		      		<button type="submit" class="btn btn-primary">Login</button>
-
-		      		<span class="pass"> <a href="#">Forgot password?</a></span>
-		    	</div>
-			</form>
+					</div>
+				</div>
+				<div class="col-md-10">
+					<div class="row"> 
+						<div id="friends" class="col-md-6 card box-shadow"> 
+							<div class="card-header"> Amigos </div>
+							<div id="friends-content" class="content"> 
+								
+							</div>
+						</div>
+						<div id="messages" class="col-md-6 card box-shadow"> 
+							<div class="card-header"> Mensagens </div>
+							<div class="content"> </div>
+						</div>
+					</div>
+					<div class="row"> 
+						<div id="groups" class="col-md-6 card box-shadow"> 
+							<div class="card-header"> Grupos </div>
+							<div class="content"> </div>
+						</div>
+						<div id="news" class="col-md-6 card box-shadow"> 
+							<div class="card-header"> Notícias </div>
+							<div class="content"> </div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<!-- sign up modal -->
-		<div id="singupForm" class="loginModal" style="display: block;">
-	  		<span onclick="document.getElementById('singupForm').style.display='none'" class="close" title="Close Modal">&times;</span>
-
-		 	<!-- Modal Content -->
-		 	<form class="modal-content animate" action="javascript:singup()">
-		    	<div class="container">
-		    		<div class="form-group">
-			    		<label for="name">Nome completo:</label>
-			      		<input type="text" placeholder="Nome" name="name" id="name" class="form-control" required>
-			      	</div>
-
-			      	<div class="form-group">
-			    		<label for="username-cad">Nome de usuário:</label>
-			      		<input type="text" placeholder="Usuário" name="username-cad" id="username-cad" class="form-control" required>
-			      	</div>
-
-			      	<div class="form-group">
-			      		<label for="email">Email:</label>
-			      		<input type="email" placeholder="example@email.com" name="email" id="email" class="form-control" required>
-			      	</div>
-
-			      	<div class="form-group">
-			      		<label for="pass-cad">Senha:</label>
-			      		<input type="password" placeholder="****" name="pass-cad" id="pass-cad" class="form-control" required>
-			      	</div>
-
-			      	<div class="form-group">
-			      		<label for="pass-check">Confirmar senha:</label>
-			      		<input type="password" placeholder="****" name="pass-check" id="pass-check" class="form-control" required>
-			      	</div>
-			      		<button type="submit" class="btn btn-primary">Cadastrar</button>
-			      		<button type="button" onclick="document.getElementById('loginForm').style.display='none'" class="cancelbtn">Cancelar</button>
-			    	
-		    	</div>
-			</form>
+		<!-- UPLOAD PROFILE PIC MODAL -->
+		<div class="modal">
+			
 		</div>
 
-		<!-- Bootstrap core JavaScript
-	    ================================================== -->
-	    <!-- Placed at the end of the document so the pages load faster -->
-	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	    <script> window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
-	    <script src="js/bootstrap.min.js"></script>
+		<!-- FOOTER -->
+		<div w3-include-html="footer.html"></div>
+
+
+		<!-- ================================================== -->
+	    <!--JS placed at the end of the document so the pages load faster -->
+
+		<!-- Bootstrap core JavaScript -->
+	    <script src="js/jquery.min.js"></script>
+	    <script src="bootstrap/js/bootstrap.min.js"></script>
 
 	    <!--- Alertify JS -->
 	    <script src="js/alertify.min.js" type="text/javascript"> </script>
+
+	    <!-- W3 JS -->
+	    <script src="https://www.w3schools.com/lib/w3.js"></script> 
 
 		<!-- javascript imports -->
 		<script src="js/script.js" type="text/javascript"> </script>
@@ -121,69 +122,30 @@
 
 		<!-- javascript in file -->
 		<script type="text/javascript">
-			// Validate login 
-			function checkLogin(){
-				var key = getParameterByName("chave");
-				if(key != "") {
-					var jsonObject = {};
+			w3.includeHTML();	
 
-					jsonObject["method"] = "confirmUser";
-					jsonObject["key"] = key;
-
-					var xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function() {
-					  if (this.readyState == 4 && this.status == 200) {
-					      var resultado = JSON.parse(this.responseText);
-					      if(resultado.status == true){
-					        window.location.href="index.html";
-					      } 
-					  }
-					};
-
-					xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
-					xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-					xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
-					xhttp.send(JSON.stringify(jsonObject));
-				}
-
-				if(getCookie("user") == "") {
-					document.getElementById("loginForm").style.display = 'block';
-				}
+			function getData(){
+				getPersonalInfo();
+				getFriends();
 			}
-			// password validation
-			var password = document.getElementById("pass-cad");
-			var confirm_password = document.getElementById("pass-check");
 
-			function validatePassword(){
-          		if(password.value != confirm_password.value) {
-          			confirm_password.setCustomValidity("Senhas estão diferentes!");
-          		} else {
-          			confirm_password.setCustomValidity('');
-          		}
-          	}
-          	
-          	password.onchange = validatePassword;
-          	confirm_password.onkeyup = validatePassword;
-
-          	// Functions to call php by xhttp
-			function login() {
+			function getPersonalInfo(){
 				var jsonObject = {};
+				var user = getCookie('user');
 
-				jsonObject["method"] = "login";
-				jsonObject["login"] = document.getElementById("username").value;
-				jsonObject["pass"] = document.getElementById("pass").value;
+				jsonObject["method"] = "getData";
+				jsonObject["user"] = user;
 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 				  if (this.readyState == 4 && this.status == 200) {
 				      var resultado = JSON.parse(this.responseText);
 				      if(resultado.status == true){
-				      	setCookie("user", jsonObject["login"], 100)
-				        window.location.href="index.html";
-				      } else{
-				        alertify.error("Usuário ou senha inválidos!");
-				        document.getElementById("username").value="";
-				        document.getElementById("pass").value="";
+				      	var data = resultado.message;
+				      	document.getElementById('pic_form').src = data.pic;
+						document.getElementById('name_form').value = data.name;
+				      } else {
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
 				      }
 				  }
 				};
@@ -194,29 +156,85 @@
 				xhttp.send(JSON.stringify(jsonObject));
 			}
 
-			function singup() {
+			function getFriends(){
 				var jsonObject = {};
+				var user = getCookie('user');
 
-				jsonObject["method"] = "singup";
-
-				jsonObject["name"] = document.getElementById("name").value;
-				jsonObject["login"] = document.getElementById("username-cad").value;
-				jsonObject["pass"] = document.getElementById("pass-cad").value;
-				jsonObject["email"] = document.getElementById("email").value;
+				jsonObject["method"] = "getFriends";
+				jsonObject["user"] = user;
 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 				  if (this.readyState == 4 && this.status == 200) {
 				      var resultado = JSON.parse(this.responseText);
 				      if(resultado.status == true){
-				        alertify.sucess("Cadstro efetuado com sucesso!");
-				        window.location.href="index.html";
-				      } else{
-				        alertify.error("Algum erro ocorreu! Tente novamente mais tarde.");
-				        document.getElementById("name").value = "";
-						document.getElementById("username-cad").value = "";
-						document.getElementById("pass-cad").value = "";
-						document.getElementById("email").value = "";
+				      	var data = resultado.message;
+				      	
+				      	var infos = "";
+				      	for (var i = 0; i < data.length; i++) {
+				      		var idUser = data[i].idUser;
+				      		var name = data[i].name;
+				      		var username = data[i].username;
+				      		var pic = data[i].pic;
+
+				      		infos += "<div class='card friend-card'>";
+							infos += "	<img class='float-right rounded-circle' src='" + pic + "'>";
+							infos += "	<div class='user-info'>";
+							infos += "		" + name + "<br />";
+							infos += "		@" + username;
+							infos += "	</div>";
+							infos += "	<div class='float-left material-icons bt' onclick=startChat(" + idUser + ")> chat </div>";
+							infos += "</div>";
+				      	}
+
+				      	document.getElementById("friends-content").innerHTML = infos;
+				      } else {
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorFriendshipApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));	
+			}
+
+			function enable_edit(form, element) {
+				document.getElementById(form).disabled = false;
+				document.getElementById(form).focus();
+					
+
+				console.log(element);
+				element.innerHTML = "done";
+				element.onclick = function() {
+					confirm_edit(form, element);
+				}
+			}
+
+			function confirm_edit(form, element) {
+				document.getElementById(form).disabled = true;
+
+				element.innerHTML = "mode_edit";
+				element.onclick = function() {
+					enable_edit(form, element);
+				}
+
+				// try to confirm changes and point to user
+				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "updateData";
+				jsonObject["user"] = user;
+				jsonObject["username"] = document.getElementById("name_form").value;
+				jsonObject["pic"] = document.getElementById("pic_form").src;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == false){
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
 				      }
 				  }
 				};
@@ -226,7 +244,10 @@
 				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
 				xhttp.send(JSON.stringify(jsonObject));
 			}
-			
+
+			function startChat(id){
+				console.log(id);
+			}
 		</script>
 	</body>
 

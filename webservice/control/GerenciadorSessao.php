@@ -14,4 +14,15 @@ class GerenciadorSessao {
     public function confirmarCadastro($key){
     	return SessaoDAO::confirmarCadastro($key);
     }
+    public function getData($user){
+        return SessaoDAO::getData($user);
+    }
+    public function updateData($user, $username, $pic){
+        return SessaoDAO::updateData($user, $username, $pic);
+    }
+    public function search($pattern){
+        return SessaoDAO::search($pattern);
+    }
 }
+
+?>

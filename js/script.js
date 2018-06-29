@@ -4,15 +4,18 @@ var pathBase = "webservice/control/";
 function checkLogin(){
 	if(getCookie("user") == "") {
 		alert("Login necessário!");
-		window.location.href = "/index.html";
+		window.location.href = "login.html";
 	}
 }
 
-// Closing login modal 
-var modal = document.getElementById('loginForm');
+// Closing login modal by clicking outside
+var modal1 = document.getElementById('loginForm');
+var modal2 = document.getElementById('signupForm');
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == modal1) {
+        modal1.style.display = "none";
+    } else if (event.target == modal2){
+    	modal2.style.display = "none";
     }
 }
 
@@ -38,6 +41,22 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+function clearCookie(cname) {
+	document.cookie = cname + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+	console.log(cname);
+}
+
+function deleteAllCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
 }
 
 // get URL parameters

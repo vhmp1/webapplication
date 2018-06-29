@@ -16,13 +16,14 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
     	$login = $jsonObject->login;
         $senha = $jsonObject->pass;
 
-        $response->status = GerenciadorSessao::efetuarLogin($login, $senha);
+        $response->message = GerenciadorSessao::efetuarLogin($login, $senha);
+        $response->status = !empty($response->message);
         
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: *");
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode( $response );
-    } elseif ( strcasecmp($jsonObject->method, "singup") == 0 ) {
+    } elseif ( strcasecmp($jsonObject->method, "signup") == 0 ) {
         $name = $jsonObject->name;
         $login = $jsonObject->login;
         $pass = $jsonObject->pass;
@@ -43,5 +44,37 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         header("Access-Control-Allow-Headers: *");
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode( $response );
-    }
+    } elseif ( strcasecmp($jsonObject->method, "getData") == 0 ) {
+        $user = $jsonObject->user;
+
+        $response->message = GerenciadorSessao::getData($user);
+        $response->status = !empty($response->message);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
+    } elseif ( strcasecmp($jsonObject->method, "updateData") == 0 ) {
+        $user = $jsonObject->user;
+        $username = $jsonObject->username;
+        $pic = $jsonObject->pic;
+
+        $response->status = GerenciadorSessao::updateData($user, $username, $pic);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
+    } elseif ( strcasecmp($jsonObject->method, "search") == 0 ) {
+        $pattern = $jsonObject->pattern;
+
+        $response->message = GerenciadorSessao::search($pattern);
+        $response->status = !empty($response->message);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
+    } 
+
 }
