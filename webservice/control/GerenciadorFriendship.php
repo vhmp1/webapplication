@@ -17,6 +17,9 @@ class GerenciadorFriendship {
     public function getFriends($user){
         return FriendshipDAO::getFriends($user);
     }
+     public function getFriendshipRequest($user){
+        return FriendshipDAO::getFriendshipRequest($user);
+    }
 }
 
 ?>

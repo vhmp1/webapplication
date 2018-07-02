@@ -49,7 +49,7 @@
 				<div id="profile" class="col-md-2 card box-shadow">
 					<div class="card-header"> Perfil </div>
 					<div class="content"> 
-						<div id="avatar"><img id="pic_form" src="img/default-avatar.png"></div>
+						<div id="avatar" class="bt" onclick="document.getElementById('uploadPicForm').style.display='block'"><img id="pic_form" src="img/default-avatar.png"></div>
 						
 						<hr>
 
@@ -65,7 +65,7 @@
 
 					</div>
 				</div>
-				<div class="col-md-10">
+				<div class="col-md-10 two-lines">
 					<div class="row"> 
 						<div id="friends" class="col-md-6 card box-shadow"> 
 							<div class="card-header"> Amigos </div>
@@ -75,26 +75,39 @@
 						</div>
 						<div id="messages" class="col-md-6 card box-shadow"> 
 							<div class="card-header"> Mensagens </div>
-							<div class="content"> </div>
+							<div id="history" class="content"> </div>
 						</div>
 					</div>
 					<div class="row"> 
 						<div id="groups" class="col-md-6 card box-shadow"> 
 							<div class="card-header"> Grupos </div>
-							<div class="content"> </div>
+							<div id="group-content" class="content"> </div>
 						</div>
 						<div id="news" class="col-md-6 card box-shadow"> 
 							<div class="card-header"> Notícias </div>
-							<div class="content"> </div>
+							<div id="news-content" class="content"> </div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- UPLOAD PROFILE PIC MODAL -->
-		<div class="modal">
-			
+		<!-- upload profile pic modal -->
+		<div id="uploadPicForm" class="modal uploadPic" style="display: none;">
+	  		<span onclick="document.getElementById('uploadPicForm').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+		 	<!-- Modal Content -->
+		 	<form class="modal-content animate" action="javascript:uploadPic()" method="post" enctype="multipart/form-data">
+		    	<div class="container">
+		    		<div class="form-group">
+		    			<label for="username"> Selecione a imagem: </label>
+		      			<input type="file" name="file" id="file" class="form-control" required>
+		      			<input type="hidden" name="uploaded" id="uploaded">
+		      		</div>
+
+		      		<button class="btn btn-primary">Adicionar</button>
+		    	</div>
+			</form>
 		</div>
 
 		<!-- FOOTER -->
@@ -127,6 +140,9 @@
 			function getData(){
 				getPersonalInfo();
 				getFriends();
+				getFriendshipRequest();
+				getMessageLog();
+				getGroups();
 			}
 
 			function getPersonalInfo(){
@@ -177,19 +193,110 @@
 				      		var username = data[i].username;
 				      		var pic = data[i].pic;
 
+				      		if(idUser == getCookie("user"))
+				      			continue;
+
 				      		infos += "<div class='card friend-card'>";
 							infos += "	<img class='float-right rounded-circle' src='" + pic + "'>";
 							infos += "	<div class='user-info'>";
 							infos += "		" + name + "<br />";
 							infos += "		@" + username;
 							infos += "	</div>";
-							infos += "	<div class='float-left material-icons bt' onclick=startChat(" + idUser + ")> chat </div>";
+							infos += "	<div class='float-left material-icons bt' onclick=startChat(" + idUser +",'" + name + "')> chat </div>";
 							infos += "</div>";
 				      	}
 
 				      	document.getElementById("friends-content").innerHTML = infos;
 				      } else {
-				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      	document.getElementById("friends-content").innerHTML = "<div class='card'> Nenhum amigo ainda :( </div>";
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorFriendshipApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));	
+			}
+
+			function getGroups(){
+				var jsonObject = {};
+				var user = getCookie('user');
+
+				jsonObject["method"] = "getGroups";
+				jsonObject["user"] = user;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				      	var data = resultado.message;
+				      	
+				      	var infos = "";
+				      	for (var i = 0; i < data.length; i++) {
+				      		var idGroup = data[i].idGroup;
+				      		var groupname = data[i].groupname;
+				      		var pic = data[i].pic;
+
+				      		infos += "<div class='card friend-card bt' onclick=window.location.href='group.html?group=" + idGroup +"'>";
+							infos += "	<img class='float-right rounded-circle' src='" + pic + "'>";
+							infos += "	<div class='user-info'>";
+							infos += "		" + groupname + "<br />";
+							infos += "	</div>";
+							infos += "</div>";
+				      	}
+				      	document.getElementById("group-content").innerHTML = infos;
+				      } else {
+				      	document.getElementById("group-content").innerHTML = "<div class='card'> Nenhum grupo :( </div>";
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorGroupApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));	
+			}
+
+			function getFriendshipRequest(){
+				var jsonObject = {};
+				var user = getCookie('user');
+
+				jsonObject["method"] = "getFriendshipRequest";
+				jsonObject["user"] = user;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				      	var data = resultado.message;
+				      	
+				      	var infos = "";
+				      	for (var i = 0; i < data.length; i++) {
+				      		var idUser = data[i].idUser;
+				      		var name = data[i].name;
+				      		var username = data[i].username;
+				      		var pic = data[i].pic;
+
+				      		if(idUser == getCookie("user"))
+				      			continue;
+
+				      		infos += "<div class='card friend-card'>";
+							infos += "	<img class='float-right rounded-circle' src='" + pic + "'>";
+							infos += "	<div class='user-info'>";
+							infos += "		" + name + "<br />";
+							infos += "		@" + username;
+							infos += "	</div>";
+							infos += "	<div class='float-left material-icons bt' onclick=acceptFriendship(" + idUser + ")> done </div>";
+							infos += "  <div class='float-left material-icons bt' onclick=declineFriendship(" + idUser + ")> not_interested </div>"
+							infos += "</div>";
+				      	}
+
+				      	document.getElementById("news-content").innerHTML = infos;
+				      } else {
+				      	document.getElementById("news-content").innerHTML = "<div class='card'> Nenhuma solicitação :( </div>";
 				      }
 				  }
 				};
@@ -204,8 +311,6 @@
 				document.getElementById(form).disabled = false;
 				document.getElementById(form).focus();
 					
-
-				console.log(element);
 				element.innerHTML = "done";
 				element.onclick = function() {
 					confirm_edit(form, element);
@@ -227,7 +332,7 @@
 				jsonObject["method"] = "updateData";
 				jsonObject["user"] = user;
 				jsonObject["username"] = document.getElementById("name_form").value;
-				jsonObject["pic"] = document.getElementById("pic_form").src;
+				jsonObject["pic"] = document.getElementById("pic_form").getAttribute("src");
 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
@@ -245,9 +350,107 @@
 				xhttp.send(JSON.stringify(jsonObject));
 			}
 
-			function startChat(id){
-				console.log(id);
+			function acceptFriendship(id){
+				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "confirmFriendship";
+				jsonObject["user"] = id;
+				jsonObject["newUser"] = user;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				      	alertify.success('Solicitação aceita!');
+				      	getData();
+				      } else {
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorFriendshipApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));
 			}
+
+			function declineFriendship(id) {
+				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "cancelFriendship";
+				jsonObject["user"] = id;
+				jsonObject["newUser"] = user;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				      	alertify.success('Solicitação recusada!');
+				      	getData();
+				      } else {
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorFriendshipApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));
+			}
+
+			function uploadPic(){
+				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "uploadPic";
+				jsonObject["user"] = user;
+				jsonObject["file"] = document.getElementById("uploaded").value;
+
+				if(jsonObject["file"] == "")
+					return;
+
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+				  if (this.readyState == 4 && this.status == 200) {
+				      var resultado = JSON.parse(this.responseText);
+				      if(resultado.status == true){
+				      	alertify.success('Imagem atualizada!');
+				      	location.reload();
+				      } else {
+				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      }
+				  }
+				};
+
+				xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
+				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
+				xhttp.send(JSON.stringify(jsonObject));
+			}
+
+			document.querySelector('#file').addEventListener('change', function(e) {
+			  var file = this.files[0];
+			  console.log(file);
+			  var fd = new FormData();
+			  fd.append("file", file);
+
+			  var xhr = new XMLHttpRequest();
+			  xhr.open('POST', 'webservice/util/upload.php', true);
+			  
+			  xhr.onload = function() {
+			    if (this.status == 200) {
+			      document.getElementById("uploaded").value = this.response;
+			    };
+			  };
+
+			  xhr.send(fd);
+			}, false);
 		</script>
 	</body>
 

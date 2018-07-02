@@ -40,13 +40,15 @@
 			<div class="leftText"> 
 				<h1> Bem vindos ao Beer!</h1>
 				<p> Somos a mais nova rede social para os amantes da cerveja! </p>			
-				<div class="actionBtns"> 
-					<button class='loginBtn' onclick="document.getElementById('loginForm').style.display='block'">
-						Entrar
-					</button>
-					<button class='signupBtn' onclick="document.getElementById('signupForm').style.display='block'">
-						Cadastre-se	
-					</button>
+				<div class="row"> 
+					<div class="col-md-12"> 
+						<button class='col-md-6 btn btn-default loginBtn' onclick="document.getElementById('loginForm').style.display='block'">
+							Entrar
+						</button>
+						<button class='col-md-6 btn btn-default signupBtn' onclick="document.getElementById('signupForm').style.display='block'">
+							Cadastre-se	
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -194,6 +196,7 @@
 				      var resultado = JSON.parse(this.responseText);
 				      if(resultado.status == true){
 				      	setCookie("user", resultado.message.idUser, 100)
+				      	setCookie("type", resultado.message.UserType_idUserType, 100)
 				        window.location.href="index.html";
 				      } else{
 				        alertify.error("Usuário ou senha inválidos!");
@@ -224,7 +227,7 @@
 				  if (this.readyState == 4 && this.status == 200) {
 				      var resultado = JSON.parse(this.responseText);
 				      if(resultado.status == true){
-				        alertify.sucess("Cadstro efetuado com sucesso!");
+				        alertify.sucess("Cadstro efetuado com sucesso! Confirme o seu cadastro pelo email.");
 				        window.location.href="index.html";
 				      } else{
 				        alertify.error("Algum erro ocorreu! Tente novamente mais tarde.");

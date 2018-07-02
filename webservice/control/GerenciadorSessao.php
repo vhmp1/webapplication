@@ -23,6 +23,9 @@ class GerenciadorSessao {
     public function search($pattern){
         return SessaoDAO::search($pattern);
     }
+    public function uploadPic($user, $file){
+        return SessaoDAO::uploadPic($user, $file);
+    }
 }
 
 ?>

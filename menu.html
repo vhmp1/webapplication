@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> 
-	<a class="navbar-brand" href="#"> <img src="img/favicon.svg" style="padding: 0; width: 25px"> Beer! </a> 
+	<a class="navbar-brand" href="index.html"> <img src="img/favicon.svg" style="padding: 0; width: 25px"> Beer! </a> 
 	
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -7,13 +7,18 @@
 
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#"> Home</a>
+        <li class="nav-item">
+          <a class="nav-link" href="index.html"> Home </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+          <a class="nav-link" href="chat.html"> Chat </a>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="createGroup.html"> Criar grupo </a>
+        </li>
+
       </ul>
 
       <div class="navbar-form navbar-left">
@@ -23,9 +28,10 @@
       			<button class="btn btn-default" onclick="window.location.href='search.html?q=' + document.getElementById('searchInput').value;">
       				<i class="material-icons" style="font-size: 12pt; padding: 0;"> search </i>
       			</button>
+            <span class="logout"><i class="material-icons bt" onclick="clearCookie('user'); window.location.href='index.html'; "> exit_to_app </i></span>
       		</div>
 
-          <span><i class="material-icons" onclick="clearCookie('user'); window.location.href='index.html'; "> exit_to_app </i></span>
+          
       	</div>
       </div>
     </div>

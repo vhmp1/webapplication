@@ -7,7 +7,7 @@
    		<meta name="description" content="">
     	<meta name="author" content="">
     	
-    	<link rel="icon" href="img/favicon.png">
+    	<link rel="icon" href="img/favicon.svg">
 		<title> Beer! </title>
 
 		<!-- reset CSS -->
@@ -39,53 +39,41 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 
 	</head>
-	<body onload="checkLogin(); getSearch();">
+	<body onload="checkLogin(); load();">
 		<!-- NAVBAR MENU -->
 		<div w3-include-html="menu.html"></div>
 
 		<!-- BODY -->
-		<div class="main-body">
-			<div class="row"> 
-				<div class="col-md-2">
-
+		<div class="chat-body">
+			<div class="row">
+				<div class="col-md-3"> 
+					<div class="card">
+						<div class="card-header"> Conversas </div>
+						<div id="history" class="content">
+							Nenhuma conversa ainda :(
+						</div>
+						
+					</div>
 				</div>
-
-				<div class="col-md-10">
-					<div id="accordion">
-						<div class="card">
-						    <div class="card-header">
-						    	<a class="card-link" data-toggle="collapse" href="#usersFound">
-							        Usuários
-							    </a>
-							    </div>
-							    <div id="usersFound" class="collapse show" data-parent="#accordion">
-							      <div class="card-body">
-							        Nada encontrado :(
-							      </div>
-							    </div>
-							</div>
-
-						<div class="card">
-							<div class="card-header">
-							    <a class="card-link" data-toggle="collapse" href="#groupsFound">
-							        Grupos
-							    </a>
-							</div>
-							<div id="groupsFound" class="collapse show" data-parent="#accordion">
-							    <div class="card-body">
-							        Nada encontrado :(
-							    </div>
-							</div>
+				<div class="col-md-9">
+					<div class="card"> 
+						<div id="chat-name" class="card-header"> Chat </div>
+						<input id='idUser' type='hidden' value=''>
+						<div id="chat-history" class="content">
+							Nenhuma mensagem ainda :(
+						</div>
+						<div class="card-footer form-group"> 
+							<input type="text" id="msg-input" name="msg" placeholder="Digite sua mensagem...">
+							<button class="btn " onclick="sendMessage()"> Enviar </button>
 						</div>
 					</div>
-
-				</div>					
+				</div>
 			</div>
 		</div>
 
 		<!-- FOOTER -->
 		<div w3-include-html="footer.html"></div>
-
+		
 		<!-- ================================================== -->
 	    <!--JS placed at the end of the document so the pages load faster -->
 
@@ -109,12 +97,26 @@
 		<script type="text/javascript">
 			w3.includeHTML();	
 
-			function getSearch() {				
-				var jsonObject = {};
-				var pattern = getParameterByName("q");
+			function load(){
+				getMessageLog();
 
-				jsonObject["method"] = "search";
-				jsonObject["pattern"] = pattern;
+				var startingChat = getParameterByName("chat");
+				var name = getParameterByName("name");
+				if(startingChat != ""){
+					getMessageHistory(startingChat);
+					document.getElementById("chat-name").innerHTML = name;
+				}
+			}
+
+			function getMessageHistory(id){
+				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "getMessageHistory";
+				jsonObject["user"] = user;
+				jsonObject["user2"] = id;
+
+				document.getElementById("idUser").value = id;
 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
@@ -124,67 +126,77 @@
 				      	var data = resultado.message;
 				      	
 				      	var infos = "";
-				      	for(var i = 0; i < data.users.length; i++){
-				      		var idUser = data.users[i].idUser;
-				      		var name = data.users[i].name;
-				      		var username = data.users[i].username;
-				      		var pic = data.users[i].pic;
-				      		var status = data.users[i].status;
+				      	for (var i = 0; i < data.length; i++) {
+				      		var idUser = data[i].idUser;
+				      		var username = data[i].username;
+				      		var name = data[i].name;
+				      		var pic = data[i].pic;
+				      		var message = data[i].message;
 
-				      		if(idUser == getCookie("user"))
-				      			continue;
-
-				      		infos += "<div class='card-body friend-card'>";
-							infos += "	<img class='float-right rounded-circle' src='" + pic + "'>";
-							infos += "	<div class='user-info'>";
-							infos += "		" + name + "<br />";
-							infos += "		@" + username;
-							infos += "	</div>";
-							if(status == 1)
-								infos += "	<div class='float-left material-icons bt'> remove </div>";
-							else if (status == 2)
-								infos += "	<div class='float-left material-icons bt' onclick=startChat(" + idUser + ",'" + name + "')> chat </div>";
-							else if (status == 3)
-								infos += ""; /*DON'T SHOW FRIENDS DECLINED?*/
-							else
-								infos += "	<div class='float-left material-icons bt' onclick=askFriendship(" + idUser + ")> person_add </div>";
-							infos += "</div>";
+				      		if (idUser == getCookie("user")) {
+				      			infos += "<div class='row'>";
+				      			infos += "	<div class='col-md-6' style='margin: -5px;'> &nbsp </div>";
+				      			infos += "	<div class='card bg-light message-card md-offset-6 col-md-6'>";
+								infos += "		<div class='message-content'>";
+								infos += "			" + message;
+								infos += "		</div>";
+								infos += "	</div>";
+								infos += "</div>";
+				      		} else {
+				      			infos += "<div class='row'>";
+				      			infos += "	<div class='card text-white bg-info message-card col-md-6'>";
+								infos += "		<img class='float-left rounded-circle' src='" + pic + "'>";
+								infos += "		<div class='message-content'>";
+								infos += "			" + message;
+								infos += "		</div>";
+								infos += "	</div>";
+								infos += "</div>";
+				      		}
+				      		
 				      	}
 
-				      	document.getElementById("usersFound").innerHTML = infos;
+				      	document.getElementById("chat-history").innerHTML = infos;
+				      	document.getElementById("chat-name").innerHTML = name;
 				      } else {
-				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      	document.getElementById("chat-history").innerHTML = "<div class='card'> Nenhuma mensagem ainda :( </div>";
+				      	document.getElementById("chat-name").innerHTML = "Chat";
 				      }
 				  }
 				};
 
-				xhttp.open("POST", pathBase + "GerenciadorSessaoApl.php", true);
+				xhttp.open("POST", pathBase + "GerenciadorMessageApl.php", true);
 				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
 				xhttp.send(JSON.stringify(jsonObject));
 			}
 
-			function askFriendship(id){
+			function sendMessage() {
 				var jsonObject = {};
+				var user = getCookie('user');
+				
+				jsonObject["method"] = "sendMessage";
+				jsonObject["type"] = 1;
+				jsonObject["user"] = user;
+				jsonObject["user2"] = document.getElementById("idUser").value;
+				jsonObject["message"] = document.getElementById("msg-input").value;	
 
-				jsonObject["method"] = "askFriendship";
-				jsonObject["user"] = getCookie("user");
-				jsonObject["newUser"] = id;
+				if(jsonObject["message"] == "")
+					return;
+
+				document.getElementById("msg-input").value = "";
+				document.getElementById("msg-input").focus();
 
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 				  if (this.readyState == 4 && this.status == 200) {
 				      var resultado = JSON.parse(this.responseText);
-				      if(resultado.status == true){
-				      	alertify.success("Solicitação enviada com sucesso!!");
-				      	getSearch();
-				      } else {
-				      	alertify.error('Um erro aconteceu, tente novamente mais tarde!');
+				      if(resultado.status != true){
+				      	console.log("Erro ao enviar mensagem!");
 				      }
 				  }
 				};
 
-				xhttp.open("POST", pathBase + "GerenciadorFriendshipApl.php", true);
+				xhttp.open("POST", pathBase + "GerenciadorMessageApl.php", true);
 				xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 				xhttp.setRequestHeader('Access-Control-Allow-Headers', '*');
 				xhttp.send(JSON.stringify(jsonObject));

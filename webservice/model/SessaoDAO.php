@@ -22,7 +22,7 @@ class SessaoDAO{
         $senha = md5($senha);
 
         $query = <<<SQL
-                SELECT idUser
+                SELECT idUser, UserType_idUserType
                 FROM User
                 WHERE username = :username AND
                 password = :password AND
@@ -64,7 +64,8 @@ SQL;
         if($statement->rowCount() == 0)
             return false;
 
-        $link = "localhost/webapplication/index.html?chave=" . $key;
+        // $link = "http://webapplication.ddns.net:5000/webapplication/index.html?chave=" . $key;
+        $link = "http://socialbeer.000webhostapp.com/index.html?chave=" . $key;
         $corpo = "  <html lang=pt-br>
                         <head>
                             <meta charset=\"utf-8\">
@@ -183,10 +184,11 @@ SQL;
         $array = array();
 
         $query = <<<SQL
-                SELECT idUser, username, name, pic
+                SELECT DISTINCT idUser, username, name, pic, status
                 FROM User
+                LEFT JOIN User_has_Friend ON idUser = User_idUser OR idUser = User_idUser1
                 WHERE UPPER(name) LIKE UPPER(:pattern)
-                OR UPPER(username) LIKE UPPER(:pattern) 
+                OR UPPER(username) LIKE UPPER(:pattern)
 SQL;
         
         $database = new Database();
@@ -203,6 +205,7 @@ SQL;
             $atual["name"] = $data->name;
             $atual["username"] = $data->username;
             $atual["pic"] = $data->pic;
+            $atual["status"] = $data->status;
             $users[] = $atual;
         }
 
@@ -235,5 +238,32 @@ SQL;
             $array["groups"] = $groups;
 
         return $array;
+    }
+
+    static public function uploadPic($user, $file) {
+        // save on server
+        // print_r("expression");
+        // print_r($file->type);
+        // print_r("expression2");
+
+        $name = "img/".md5($file->name).".jpg";
+        file_put_contents('../../'.$name, base64_decode($file->dataUrl));
+
+        // insert on db
+        $query = <<<SQL
+                UPDATE User 
+                SET pic = :pic
+                WHERE idUser = :user
+SQL;
+
+        $database = new Database();
+        $database = $database->getConn();
+        $statement = $database->prepare($query);
+        $statement->bindValue(':user', $user, PDO::PARAM_INT);
+        $statement->bindValue(':pic', $name, PDO::PARAM_STR);
+        $statement->execute();
+        $database = null;
+
+        return $statement->rowCount() > 0;
     }
 }

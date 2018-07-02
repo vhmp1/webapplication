@@ -75,6 +75,16 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         header("Access-Control-Allow-Headers: *");
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode( $response );
-    } 
+    } elseif( strcasecmp($jsonObject->method, "uploadPic") == 0){
+        $user = $jsonObject->user;
+        $file = json_decode($jsonObject->file);
+        
+        $response->status = GerenciadorSessao::uploadPic($user, $file);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
+    }
 
 }

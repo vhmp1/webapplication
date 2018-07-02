@@ -49,5 +49,15 @@ if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
         header("Access-Control-Allow-Headers: *");
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode( $response );
+    } elseif ( strcasecmp($jsonObject->method, "getFriendshipRequest") == 0 ) {
+        $user = $jsonObject->user;
+
+        $response->message = GerenciadorFriendship::getFriendshipRequest($user);
+        $response->status = !empty($response->message);
+        
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: *");
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode( $response );
     }
 }
